@@ -5,32 +5,77 @@ from pydantic import conint
 
 from app.database.database import get_db
 from app.models.user import User
-from app.schemas.user import User, UserResponse
+from app.schemas.user import UserCreate, UserResponse
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/GetAllUsers/", response_model=List[UserResponse], description="get all users")
+@router.post("/CreateUser/", response_model=UserResponse, description="Create a new user")
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    """
+    Create a new user.
+
+    Args:
+        user (UserCreate): The details of the user to be created.
+        db (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        UserResponse: The details of the created user.
+
+    Raises:
+        HTTPException: If an error occurs during the creation process.
+    """
+    try:
+        db_user = User(**user.dict())
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
+
+
+@router.get("/GetAllUsers/", response_model=List[UserResponse], description="Get all users")
 def get_all_users(db: Session = Depends(get_db)):
-    users = db.query(User).all()
-    return users
+    """
+    Retrieve all users.
+
+    Args:
+        db (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        List[UserResponse]: A list of all users.
+
+    Raises:
+        HTTPException: If an error occurs during the retrieval process.
+    """
+    try:
+        users = db.query(User).all()
+        return users
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
 
 
-@router.get("/GetUserByID/", response_model=UserResponse, description="get user by id.")
+@router.get("/GetUserByID/", response_model=UserResponse, description="Get user by ID")
 def get_users_by_id(user_id: conint(ge=1), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
+    """
+    Retrieve a user by its ID.
 
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
+    Args:
+        user_id (int): The ID of the user to retrieve.
+        db (Session, optional): The database session. Defaults to Depends(get_db).
 
-    return user
+    Returns:
+        UserResponse: The details of the requested user.
 
-
-@router.get("/GetUserByName/", response_model=UserResponse, description="get user by name.")
-def get_users_by_name(user_name: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.name == user_name).first()
-
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
-
-    return user
+    Raises:
+        HTTPException: If the user with the specified ID is not found or an error occurs.
+    """
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")

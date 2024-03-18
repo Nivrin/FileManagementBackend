@@ -1,19 +1,28 @@
 from typing import List, Optional
-from pydantic import BaseModel, conint
+from pydantic import BaseModel,Field,conint
 
-from app.schemas.user import User
-from app.schemas.group import Group
+from app.schemas.user import UserResponse
+from app.schemas.group import GroupResponse
 
 
 class FileCreate(BaseModel):
-    id: Optional[int]
-    name: str
+    name: str = Field(..., min_length=1, max_length=50, examples=["string"])
     risk: conint(ge=0, le=100)
+
+    class Config:
+        extra = "forbid"
 
 
 class FileResponse(BaseModel):
-    id: Optional[int]
+    id: int
     name: str
     risk: int
-    users: Optional[List[User]] = []
-    groups: Optional[List[Group]] = []
+    users: Optional[List[UserResponse]] = []
+    groups: Optional[List[GroupResponse]] = []
+
+
+class FileTopSharedResponse(BaseModel):
+    id: int
+    name: str
+    risk: int
+    users: Optional[List[UserResponse]] = []

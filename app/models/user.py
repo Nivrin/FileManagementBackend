@@ -14,5 +14,3 @@ class User(Base):
 
     groups = relationship('Group', secondary=user_group, back_populates='users')
     files = relationship('File', secondary=file_user, back_populates='users')
-
-

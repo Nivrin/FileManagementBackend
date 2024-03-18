@@ -1,14 +1,13 @@
 from typing import List, Optional
 from pydantic import BaseModel
-from app.schemas.user import User
+from app.schemas.user import UserResponse
 
 
-class Group(BaseModel):
-    id: Optional[int]
+class GroupCreate(BaseModel):
     name: str
-    users: Optional[List[int]] = []
 
 
 class GroupResponse(BaseModel):
+    id: int
     name: str
-    List: List[User]
+    users: List[UserResponse]
