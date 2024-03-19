@@ -6,7 +6,7 @@ from logging.handlers import RotatingFileHandler
 def setup_logging():
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    logs_dir = os.path.join(current_dir, '..', '..', 'data_and_logs', 'logs')
+    logs_dir = os.path.join(current_dir, '..', '..', 'logs')
 
     os.makedirs(logs_dir, exist_ok=True)
 
