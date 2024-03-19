@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
@@ -7,6 +8,10 @@ from app.database.database import get_db
 from app.models.group import Group
 from app.models.user import User
 from app.schemas.group import GroupCreate, GroupResponse
+
+logger = logging.getLogger(__name__)
+
+
 router = APIRouter(prefix="/groups", tags=["groups"])
 
 
@@ -27,9 +32,14 @@ def create_user(group: GroupCreate, db: Session = Depends(get_db)):
         db.add(db_group)
         db.commit()
         db.refresh(db_group)
+
+        logger.info(f"Group- '{group.name}' created.")
         return db_group
+
     except Exception as e:
         db.rollback()
+
+        logger.error(f"Error occurred while creating group: '{group.name}' - {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
 
 
@@ -46,8 +56,12 @@ def get_all_groups(db: Session = Depends(get_db)):
     """
     try:
         groups = db.query(Group).all()
+
+        logger.info(f"All groups retrieved.")
         return groups
+
     except Exception as e:
+        logger.error(f"Error occurred while retrieving all groups - {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
 
 
@@ -68,12 +82,18 @@ def get_group_by_id(group_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     try:
         group = db.query(Group).filter(Group.id == group_id).first()
+
         if group is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
+
+        logger.info(f"Group: '{group.name}' - retrieved.")
         return group
+
     except HTTPException:
         raise
+
     except Exception as e:
+        logger.error(f"Error occurred while retrieving group with id: {group_id} - {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
 
 
@@ -110,9 +130,13 @@ def share_file_with_group(user_id: conint(ge=1), group_id: conint(ge=1), db: Ses
         db.commit()
         db.refresh(group)
 
+        logger.info(f"Group: '{group.name}' shared with user - '{user.name}'.")
+
         return group
 
     except HTTPException:
         raise
+
     except Exception as e:
+        logger.error(f"Error occurred while sharing group with id: '{group_id}' with user with id: '{user_id}' - {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
