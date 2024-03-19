@@ -7,15 +7,7 @@ from fastapi.responses import FileResponse
 from app.database.database import create_database
 from app.routes import files, groups, users
 from app.utils.logger import setup_logging
-from app.config.config import POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB
 
-
-
-print(POSTGRES_USER)
-print(POSTGRES_PASSWORD)
-print(POSTGRES_HOST)
-print(POSTGRES_PORT)
-print(POSTGRES_DB)
 app = FastAPI()
 
 setup_logging()

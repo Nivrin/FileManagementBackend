@@ -4,14 +4,6 @@ from sqlalchemy.orm import sessionmaker
 
 from app.config.config import POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB
 
-
-
-print(POSTGRES_USER)
-print(POSTGRES_PASSWORD)
-print(POSTGRES_HOST)
-print(POSTGRES_PORT)
-print(POSTGRES_DB)
-
 Base = declarative_base()
 
 SQLALCHEMY_DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
