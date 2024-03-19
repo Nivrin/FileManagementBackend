@@ -39,7 +39,8 @@ async def get_file_by_id_db(file_id: int, db: Session):
         file = db.query(File).filter(File.id == file_id).first()
 
         if file is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="File not found")
 
         return file
 
@@ -56,13 +57,16 @@ async def share_file_with_user_db(file_id: int, user_id: int, db: Session):
         user = db.query(User).filter(User.id == user_id).first()
 
         if file is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="File not found")
 
         if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="User not found")
 
         if user in file.users:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is already shared with this user")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="File is already shared with this user")
 
         file.users.append(user)
         db.commit()
@@ -84,13 +88,16 @@ async def share_file_with_group_db(file_id: int, group_id: int, db: Session):
         group = db.query(Group).filter(Group.id == group_id).first()
 
         if file is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="File not found")
 
         if group is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Group not found")
 
         if group in file.groups:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is already shared with this group")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="File is already shared with this group")
 
         file.users.append(group)
         db.commit()

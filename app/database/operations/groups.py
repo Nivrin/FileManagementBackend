@@ -46,13 +46,16 @@ async def share_group_with_user_db(group_id: int, user_id: int, db: Session):
         user = db.query(User).filter(User.id == user_id).first()
 
         if group is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Group not found")
 
         if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="User not found")
 
         if user in group.users:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Group is already shared with this user")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="Group is already shared with this user")
 
         group.users.append(user)
         db.commit()

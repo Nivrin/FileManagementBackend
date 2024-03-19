@@ -15,6 +15,7 @@ async def create_user_db(user: UserCreate, db: Session):
         return db_user
 
     except Exception as e:
+        db.rollback()
         raise e
 
 

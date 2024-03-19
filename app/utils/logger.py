@@ -12,7 +12,6 @@ def setup_logging():
 
     log_file = os.path.join(logs_dir, 'app.log')
 
-    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

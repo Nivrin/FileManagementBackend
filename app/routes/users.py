@@ -67,8 +67,7 @@ async def get_all_users(db: Session = Depends(get_db)):
         logger.error(f"Error occurred while retrieving all users - {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while retrieving users"
-        )
+            detail="An error occurred while retrieving users")
 
 
 @router.get("/GetUserByID/", response_model=UserResponse, description="Get user by ID")
@@ -90,7 +89,8 @@ async def get_user_by_id(user_id: conint(ge=1), db: Session = Depends(get_db)):
         user_retrieved: UserResponse = await get_user_by_id_db(user_id, db)
 
         if user_retrieved is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="User not found")
 
         logger.info(f"User: '{user_retrieved.name}' - retrieved.")
         return user_retrieved
@@ -99,5 +99,4 @@ async def get_user_by_id(user_id: conint(ge=1), db: Session = Depends(get_db)):
         logger.error(f"Error occurred while retrieving user with id: '{user_id}' - {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while retrieving user"
-        )
+            detail="An error occurred while retrieving user")

@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel,Field,conint
+from pydantic import BaseModel, Field, conint
 
 from app.schemas.user import UserResponse
 from app.schemas.group import GroupResponse

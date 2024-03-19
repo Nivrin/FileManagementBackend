@@ -8,4 +8,3 @@ user_group = Table(
     Column('user_id', Integer, ForeignKey('user.id'), primary_key=True),
     Column('group_id', Integer, ForeignKey('group.id'), primary_key=True)
 )
-

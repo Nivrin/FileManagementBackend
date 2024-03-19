@@ -3,7 +3,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.database.database import create_database
-from app.routes import files,groups,users
+from app.routes import files, groups, users
 from app.utils.logger import setup_logging
 
 app = FastAPI()

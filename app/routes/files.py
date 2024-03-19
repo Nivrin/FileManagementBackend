@@ -171,7 +171,20 @@ async def share_file_with_group(file_id: conint(ge=1), group_id: conint(ge=1), d
 
 
 @router.get("/TopSharedFiles/", response_model=List[FileTopSharedResponse], description="Get top shared files.")
-async def get_top_shared_files(k:  conint(ge=1, le= 10) = 5, db: Session = Depends(get_db)):
+async def get_top_shared_files(k:  conint(ge=1, le=10) = 5, db: Session = Depends(get_db)):
+    """
+    Retrieve the top shared files.
+
+    Args:
+        k (int): The number of top shared files to retrieve. Default is 5.
+        db (Session, optional): The database session. Defaults to Depends(get_db).
+
+    Returns:
+        List[FileTopSharedResponse]: A list of FileTopSharedResponse objects representing the top shared files.
+
+    Raises:
+        HTTPException: If an error occurs during the retrieval process.
+    """
     try:
         files: List[FileTopSharedResponse] = await get_top_shared_file_db(k, db)
 

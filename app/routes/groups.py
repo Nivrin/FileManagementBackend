@@ -6,7 +6,8 @@ from pydantic import conint
 
 from app.database.database import get_db
 from app.schemas.group import GroupCreate, GroupResponse
-from app.database.operations.groups import create_group_db,get_all_groups_db,get_group_by_id_db, share_group_with_user_db
+from app.database.operations.groups import (create_group_db, get_all_groups_db,
+                                            get_group_by_id_db, share_group_with_user_db)
 logger = logging.getLogger(__name__)
 
 
