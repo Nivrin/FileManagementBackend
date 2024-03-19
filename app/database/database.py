@@ -1,12 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import sqlalchemy
 
 Base = declarative_base()
 
 SQLALCHEMY_DATABASE_URL = "postgresql://niv:1234@127.0.0.1:5432/niv"
-
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
@@ -15,8 +13,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def create_database():
     Base.metadata.create_all(bind=engine)
-
-    print("Database tables created successfully!")
 
 
 def get_db():

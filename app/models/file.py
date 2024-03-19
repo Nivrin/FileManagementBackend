@@ -1,10 +1,9 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
+from app.database.database import Base
 from app.models.file_group import file_group
 from app.models.file_user import file_user
-
-from app.database.database import Base
 
 
 class File(Base):

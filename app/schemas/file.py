@@ -22,7 +22,6 @@ class FileResponse(BaseModel):
 
 
 class FileTopSharedResponse(BaseModel):
-    id: int
     name: str
     risk: int
-    users: Optional[List[UserResponse]] = []
+    users: List[str]

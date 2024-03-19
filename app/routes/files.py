@@ -5,10 +5,10 @@ from typing import List
 from pydantic import conint
 
 from app.database.database import get_db
-from app.schemas.file import FileCreate, FileResponse
+from app.schemas.file import FileCreate, FileResponse, FileTopSharedResponse
 from app.database.operations.files import (create_file_db, get_files_db,
                                            get_file_by_id_db, share_file_with_user_db,
-                                           share_file_with_group_db)
+                                           share_file_with_group_db, get_top_shared_file_db)
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +121,7 @@ async def share_file_with_user(file_id: conint(ge=1), user_id: conint(ge=1), db:
         HTTPException: If the file or user with the specified IDs are not found, or if an error occurs.
     """
     try:
-        file_shared: FileResponse = await share_file_with_user_db(file_id,user_id, db)
+        file_shared: FileResponse = await share_file_with_user_db(file_id, user_id, db)
 
         logger.info(f"File: '{file_shared.name}' shared with user.")
         return file_shared
@@ -169,8 +169,18 @@ async def share_file_with_group(file_id: conint(ge=1), group_id: conint(ge=1), d
             detail="An error occurred while sharing a file with a group."
         )
 
-@router.get("/TopSharedFiles/", response_model=List[FileResponse], description="Get top shared files.")
-def get_top_shared_files(k: int, db: Session = Depends(get_db)):
 
+@router.get("/TopSharedFiles/", response_model=List[FileTopSharedResponse], description="Get top shared files.")
+async def get_top_shared_files(k:  conint(ge=1, le= 10) = 5, db: Session = Depends(get_db)):
+    try:
+        files: List[FileTopSharedResponse] = await get_top_shared_file_db(k, db)
 
-    return ""
+        logger.info(f"Top {k} shared files retrieved.")
+        return files
+
+    except Exception as e:
+        logger.error(f"Error occurred while retrieving {k} top shared files - {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving top shared files."
+        )
