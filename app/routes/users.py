@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.database.database import get_db
-from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse
+from app.database.operations.users import (create_user_db,
+                                           get_all_users_db, get_user_by_id_db)
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.post("/CreateUser/", response_model=UserResponse, description="Create a new user")
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """
     Create a new user.
 
@@ -29,23 +30,21 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         HTTPException: If an error occurs during the creation process.
     """
     try:
-        db_user = User(**user.dict())
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
+        created_user: UserCreate = await create_user_db(user, db)
 
         logger.info(f"User- '{user.name}' created.")
-        return db_user
+        return created_user
 
     except Exception as e:
-        db.rollback()
-
         logger.error(f"Error occurred while creating user: '{user.name}' - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while creating user"
+        )
 
 
 @router.get("/GetAllUsers/", response_model=List[UserResponse], description="Get all users")
-def get_all_users(db: Session = Depends(get_db)):
+async def get_all_users(db: Session = Depends(get_db)):
     """
     Retrieve all users.
 
@@ -59,19 +58,21 @@ def get_all_users(db: Session = Depends(get_db)):
         HTTPException: If an error occurs during the retrieval process.
     """
     try:
-        users = db.query(User).all()
+        users_retrieved: List[UserResponse] = await get_all_users_db(db)
 
         logger.info(f"All users retrieved.")
-        return users
+        return users_retrieved
 
     except Exception as e:
-
         logger.error(f"Error occurred while retrieving all users - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving users"
+        )
 
 
 @router.get("/GetUserByID/", response_model=UserResponse, description="Get user by ID")
-def get_users_by_id(user_id: conint(ge=1), db: Session = Depends(get_db)):
+async def get_user_by_id(user_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Retrieve a user by its ID.
 
@@ -86,13 +87,17 @@ def get_users_by_id(user_id: conint(ge=1), db: Session = Depends(get_db)):
         HTTPException: If the user with the specified ID is not found or an error occurs.
     """
     try:
-        user = db.query(User).filter(User.id == user_id).first()
-        if user is None:
+        user_retrieved: UserResponse = await get_user_by_id_db(user_id, db)
+
+        if user_retrieved is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-        logger.info(f"User: '{user.name}' - retrieved.")
-        return user
+        logger.info(f"User: '{user_retrieved.name}' - retrieved.")
+        return user_retrieved
 
     except Exception as e:
         logger.error(f"Error occurred while retrieving user with id: '{user_id}' - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving user"
+        )

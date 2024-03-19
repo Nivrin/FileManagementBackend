@@ -5,10 +5,8 @@ from typing import List
 from pydantic import conint
 
 from app.database.database import get_db
-from app.models.group import Group
-from app.models.user import User
 from app.schemas.group import GroupCreate, GroupResponse
-
+from app.database.operations.groups import create_group_db,get_all_groups_db,get_group_by_id_db, share_group_with_user_db
 logger = logging.getLogger(__name__)
 
 
@@ -16,7 +14,7 @@ router = APIRouter(prefix="/groups", tags=["groups"])
 
 
 @router.post("/CreateGroup/", response_model=GroupResponse, description="Create a new group")
-def create_user(group: GroupCreate, db: Session = Depends(get_db)):
+async def create_group(group: GroupCreate, db: Session = Depends(get_db)):
     """
     Create a new user group.
 
@@ -28,23 +26,20 @@ def create_user(group: GroupCreate, db: Session = Depends(get_db)):
         GroupResponse: The details of the created group.
     """
     try:
-        db_group = Group(**group.dict())
-        db.add(db_group)
-        db.commit()
-        db.refresh(db_group)
+        created_group: GroupResponse = await create_group_db(group, db)
 
         logger.info(f"Group- '{group.name}' created.")
-        return db_group
+        return created_group
 
     except Exception as e:
-        db.rollback()
-
         logger.error(f"Error occurred while creating group: '{group.name}' - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
+        raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An error occurred while creating a group")
 
 
 @router.get("/GetAllGroups/", response_model=List[GroupResponse], description="Get all groups")
-def get_all_groups(db: Session = Depends(get_db)):
+async def get_all_groups(db: Session = Depends(get_db)):
     """
     Retrieve all user groups.
 
@@ -55,18 +50,20 @@ def get_all_groups(db: Session = Depends(get_db)):
         List[GroupResponse]: A list of all user groups.
     """
     try:
-        groups = db.query(Group).all()
+        groups_retrieved: List[GroupResponse] = await get_all_groups_db(db)
 
         logger.info(f"All groups retrieved.")
-        return groups
+        return groups_retrieved
 
     except Exception as e:
         logger.error(f"Error occurred while retrieving all groups - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving groups")
 
 
 @router.get("/GetGroupByID/", response_model=GroupResponse, description="Get group by ID")
-def get_group_by_id(group_id: conint(ge=1), db: Session = Depends(get_db)):
+async def get_group_by_id(group_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Retrieve a user group by its ID.
 
@@ -81,24 +78,20 @@ def get_group_by_id(group_id: conint(ge=1), db: Session = Depends(get_db)):
         HTTPException: If the group with the specified ID is not found or an error occurs.
     """
     try:
-        group = db.query(Group).filter(Group.id == group_id).first()
+        group_retrieved: GroupResponse = await get_group_by_id_db(group_id, db)
 
-        if group is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
-
-        logger.info(f"Group: '{group.name}' - retrieved.")
-        return group
-
-    except HTTPException:
-        raise
+        logger.info(f"Group: '{group_retrieved.name}' - retrieved.")
+        return group_retrieved
 
     except Exception as e:
         logger.error(f"Error occurred while retrieving group with id: {group_id} - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving a group")
 
 
 @router.post("/ShareUserWithGroup/{file_id}", response_model=GroupResponse, description="Share file with a user.")
-def share_file_with_group(user_id: conint(ge=1), group_id: conint(ge=1), db: Session = Depends(get_db)):
+async def share_group_with_user(group_id: conint(ge=1), user_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Share a user with a group.
 
@@ -114,29 +107,16 @@ def share_file_with_group(user_id: conint(ge=1), group_id: conint(ge=1), db: Ses
         HTTPException: If the user or group with the specified IDs are not found, or if an error occurs.
     """
     try:
-        group = db.query(Group).filter(Group.id == group_id).first()
-        user = db.query(User).filter(User.id == user_id).first()
+        group_shared: GroupResponse = await share_group_with_user_db(group_id, user_id, db)
 
-        if group is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
+        logger.info(f"Group: '{group_shared.name}' shared with user.")
+        return group_shared
 
-        if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-        if user in group.users:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already shared with this group")
-
-        group.users.append(user)
-        db.commit()
-        db.refresh(group)
-
-        logger.info(f"Group: '{group.name}' shared with user - '{user.name}'.")
-
-        return group
-
-    except HTTPException:
-        raise
+    except HTTPException as http_exc:
+        raise http_exc
 
     except Exception as e:
         logger.error(f"Error occurred while sharing group with id: '{group_id}' with user with id: '{user_id}' - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while sharing a group with user")

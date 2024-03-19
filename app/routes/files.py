@@ -3,13 +3,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from pydantic import conint
-from sqlalchemy import func, select
 
 from app.database.database import get_db
-from app.models.file import File
 from app.schemas.file import FileCreate, FileResponse
-from app.models.user import User
-from app.models.group import Group
+from app.database.operations.files import (create_file_db, get_files_db,
+                                           get_file_by_id_db, share_file_with_user_db,
+                                           share_file_with_group_db)
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ router = APIRouter(prefix="/files", tags=["files"])
 
 
 @router.post("/CreateFile/", response_model=FileResponse, description="Create file.")
-def create_file(file: FileCreate, db: Session = Depends(get_db)):
+async def create_file(file: FileCreate, db: Session = Depends(get_db)):
     """
     Create a new file.
 
@@ -32,23 +31,21 @@ def create_file(file: FileCreate, db: Session = Depends(get_db)):
         HTTPException: If an error occurs during the creation process.
     """
     try:
-        db_file = File(**file.dict())
-        db.add(db_file)
-        db.commit()
-        db.refresh(db_file)
+        file_created: FileResponse = await create_file_db(file, db)
 
         logger.info(f"File: '{file.name}' - created.")
-        return db_file
+        return file_created
 
     except Exception as e:
-        db.rollback()
-
         logger.error(f"Error occurred during the creation of file- '{file.name}' - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while creating a file"
+        )
 
 
 @router.get("/GetAllFiles/", response_model=List[FileResponse], description="Get all files.")
-def get_files(db: Session = Depends(get_db)):
+async def get_files(db: Session = Depends(get_db)):
     """
     Retrieve all files.
 
@@ -62,18 +59,21 @@ def get_files(db: Session = Depends(get_db)):
         HTTPException: If an error occurs during the retrieval process.
     """
     try:
-        files = db.query(File).all()
+        files_retrieved: List[FileResponse] = await get_files_db(db)
 
         logger.info(f"All Files retrieved.")
-        return files
+        return files_retrieved
 
     except Exception as e:
         logger.error(f"Error occurred while retrieving files: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving files"
+        )
 
 
 @router.get("/GetFileByID/", response_model=FileResponse, description="Get file by ID.")
-def get_file_by_id(file_id: conint(ge=1), db: Session = Depends(get_db)):
+async def get_file_by_id(file_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Retrieve a file by its ID.
 
@@ -88,23 +88,24 @@ def get_file_by_id(file_id: conint(ge=1), db: Session = Depends(get_db)):
         HTTPException: If the file with the specified ID is not found or an error occurs.
     """
     try:
-        file = db.query(File).filter(File.id == file_id).first()
-        if file is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+        file_retrieved: FileResponse = await get_file_by_id_db(file_id, db)
 
-        logger.info(f"File: '{file.name}' - retrieved to user.")
-        return file
+        logger.info(f"File: '{file_retrieved.name}' - retrieved to user.")
+        return file_retrieved
 
-    except HTTPException:
-        raise
+    except HTTPException as http_exc:
+        raise http_exc
 
     except Exception as e:
         logger.error(f"Error occurred while retrieving file with id: '{file_id}' - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving a file"
+        )
 
 
 @router.post("/ShareFileWithUser/{file_id}", response_model=FileResponse, description="Share file with a user.")
-def share_file_with_group(file_id: conint(ge=1), user_id: conint(ge=1), db: Session = Depends(get_db)):
+async def share_file_with_user(file_id: conint(ge=1), user_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Share a file with a group.
 
@@ -120,35 +121,24 @@ def share_file_with_group(file_id: conint(ge=1), user_id: conint(ge=1), db: Sess
         HTTPException: If the file or user with the specified IDs are not found, or if an error occurs.
     """
     try:
-        file = db.query(File).filter(File.id == file_id).first()
-        user = db.query(User).filter(User.id == user_id).first()
+        file_shared: FileResponse = await share_file_with_user_db(file_id,user_id, db)
 
-        if file is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
+        logger.info(f"File: '{file_shared.name}' shared with user.")
+        return file_shared
 
-        if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-        if user in file.users:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is already shared with this user")
-
-        file.users.append(user)
-        db.commit()
-        db.refresh(file)
-
-        logger.info(f"File: '{file.name}' shared with user - '{user.name}'.")
-        return file
-
-    except HTTPException:
-        raise
+    except HTTPException as http_exc:
+        raise http_exc
 
     except Exception as e:
         logger.error(f"Error occurred while sharing file with id: '{file_id}' with user with id: '{user_id}' - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while sharing a file with a user"
+        )
 
 
 @router.post("/ShareFileWithGroup/{file_id}", response_model=FileResponse, description="Share file with a user.")
-def share_file_with_group(file_id: conint(ge=1), group_id: conint(ge=1), db: Session = Depends(get_db)):
+async def share_file_with_group(file_id: conint(ge=1), group_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Share a file with a group.
 
@@ -164,32 +154,20 @@ def share_file_with_group(file_id: conint(ge=1), group_id: conint(ge=1), db: Ses
         HTTPException: If the file or group with the specified IDs are not found, or if an error occurs.
     """
     try:
-        file = db.query(File).filter(File.id == file_id).first()
-        group = db.query(Group).filter(Group.id == group_id).first()
+        file_shared: FileResponse = await share_file_with_group_db(file_id, group_id, db)
 
-        if file is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
-
-        if group is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
-
-        if group in file.groups:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is already shared with this group")
-
-        file.groups.append(group)
-        db.commit()
-        db.refresh(file)
-
-        logger.info(f"File- '{file.name}' shared with group - '{group.name}'")
-        return file
+        logger.info(f"File- '{file_shared.name}' shared with a group.")
+        return file_shared
 
     except HTTPException:
         raise
 
     except Exception as e:
         logger.error(f"Error occurred while sharing file with id: '{file_id}' with group with id: '{group_id}' - {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while sharing a file with a group."
+        )
 
 @router.get("/TopSharedFiles/", response_model=List[FileResponse], description="Get top shared files.")
 def get_top_shared_files(k: int, db: Session = Depends(get_db)):
