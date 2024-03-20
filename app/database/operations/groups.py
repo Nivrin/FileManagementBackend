@@ -34,7 +34,13 @@ async def get_group_by_id_db(group_id: int, db: Session):
     try:
         group = db.query(Group).filter(Group.id == group_id).first()
 
+        if group is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Group not found")
         return group
+
+    except HTTPException as http_exc:
+        raise http_exc
 
     except Exception as e:
         raise e

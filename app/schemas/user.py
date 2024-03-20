@@ -9,5 +9,9 @@ class UserCreate(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: int
     name: str
+    id: int
+
+
+class UserShared(BaseModel):
+    id: int

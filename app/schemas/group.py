@@ -9,6 +9,9 @@ class GroupCreate(BaseModel):
 
 
 class GroupResponse(BaseModel):
-    id: int
     name: str
     users: List[UserResponse]
+
+
+class GroupShared(BaseModel):
+    id: int

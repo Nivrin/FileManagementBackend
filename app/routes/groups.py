@@ -83,12 +83,15 @@ async def get_group_by_id(group_id: conint(ge=1), db: Session = Depends(get_db))
     try:
         group_retrieved: GroupResponse = await get_group_by_id_db(group_id, db)
 
-        if group_retrieved is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="Group not found")
+        # if group_retrieved is None:
+        #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        #                         detail="Group not found")
 
         logger.info(f"Group: '{group_retrieved.name}' - retrieved.")
         return group_retrieved
+
+    except HTTPException:
+        raise
 
     except Exception as e:
         logger.error(f"Error occurred while retrieving group with id: {group_id} - {e}")

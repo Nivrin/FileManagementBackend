@@ -99,7 +99,7 @@ async def share_file_with_group_db(file_id: int, group_id: int, db: Session):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail="File is already shared with this group")
 
-        file.users.append(group)
+        file.groups.append(group)
         db.commit()
         db.refresh(file)
 

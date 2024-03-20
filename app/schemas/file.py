@@ -1,8 +1,8 @@
 from pydantic import BaseModel,conint, Field
 from typing import List, Optional
 
-from app.schemas.group import GroupResponse
-from app.schemas.user import UserResponse
+from app.schemas.group import GroupShared
+from app.schemas.user import UserShared
 
 
 class FileCreate(BaseModel):
@@ -14,11 +14,10 @@ class FileCreate(BaseModel):
 
 
 class FileResponse(BaseModel):
-    id: int
     name: str
     risk: int
-    users: Optional[List[UserResponse]] = []
-    groups: Optional[List[GroupResponse]] = []
+    users: List[UserShared]
+    groups: List[GroupShared]
 
 
 class FileTopSharedResponse(BaseModel):
