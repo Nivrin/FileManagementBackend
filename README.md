@@ -120,7 +120,9 @@ This document outlines the usage of the API endpoints provided by the applicatio
 ### Get User By ID
 
 - **Description:** Retrieve a user by its ID.
-- **Endpoint:** GET /users/GetUserByID/
+- **Endpoint:** GET /users/GetUserByID/{user_id}
+- **Path Parameters:**
+  - **user_id (int):** The ID of the user to retrieve.
 - **Query Parameters:**
   - **user_id (int):** The ID of the user to retrieve.
 - **Response:**
@@ -154,7 +156,9 @@ This document outlines the usage of the API endpoints provided by the applicatio
 ### Get Group By ID
 
 - **Description:** Retrieve a user group by its ID.
-- **Endpoint:** GET /groups/GetGroupByID/
+- **Endpoint:** GET /groups/GetGroupByID/{group_id}
+- **Path Parameters:**
+  - **group_id (int):** The ID of the group to retrieve.
 - **Query Parameters:**
   - **group_id (int):** The ID of the group to retrieve.
 - **Response:**
@@ -201,7 +205,9 @@ This document outlines the usage of the API endpoints provided by the applicatio
 ### Get File By ID
 
 - **Description:** Retrieve a file by its ID.
-- **Endpoint:** GET /files/GetFileByID/
+- **Endpoint:** GET /files/GetFileByID/{file_id}
+- **Path Parameters:**
+  - **file_id (int):** The ID of the user to retrieve.
 - **Query Parameters:**
   - **file_id (int):** The ID of the file to retrieve.
 - **Response:**
@@ -238,7 +244,9 @@ This document outlines the usage of the API endpoints provided by the applicatio
 ### Get Top Shared Files
 
 - **Description:** Retrieve the top shared files.
-- **Endpoint:** GET /files/TopSharedFiles/
+- **Endpoint:** GET /files/TopSharedFiles/{k}
+- **Path Parameters:**
+  - **k (int):** The number of top shared files to retrieve. Default is 5.
 - **Query Parameters:**
   - **k (int):** The number of top shared files to retrieve. Default is 5.
 - **Response:**
