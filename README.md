@@ -262,7 +262,7 @@ This document outlines the usage of the API endpoints provided by the applicatio
 
 ### Get Logs
 
-- **Description:** Retrieve application logs - internal use.
+- **Description:** Retrieve application logs - internal use for debugging
 - **Endpoint:** GET /logs
 - **Response:**
   - Log file content if available, otherwise 404 Not Found.
