@@ -1,43 +1,43 @@
-version: "3.8"
+  version: "3.8"
 
-services:
-  db:
-    image: postgres
-    container_name: local_pgdb
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - local_pgdata:/var/lib/postgresql/data
-    command: ["postgres", "-c", "log_statement=all"]
+  services:
+    db:
+      image: postgres
+      container_name: local_pgdb
+      restart: always
+      ports:
+        - "5432:5432"
+      environment:
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      volumes:
+        - local_pgdata:/var/lib/postgresql/data
+      command: ["postgres", "-c", "log_statement=all"]
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin4
-    restart: always
-    ports:
-      - "${PGADMIN_PORT}:${PGADMIN_CONTAINER_PORT}"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
+    pgadmin:
+      image: dpage/pgadmin4
+      container_name: pgadmin4
+      restart: always
+      ports:
+        - "${PGADMIN_PORT}:${PGADMIN_CONTAINER_PORT}"
+      environment:
+        PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+        PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      volumes:
+        - pgadmin-data:/var/lib/pgadmin
 
-  web:
-    build: .
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0 --port ${FASTAPI_PORT}'
-    container_name: niv
-    ports:
-      - "${FASTAPI_PORT}:${FASTAPI_PORT}"
-    environment:
-      - DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}}"
-    depends_on:
-      - db
+    web:
+      build: .
+      command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0 --port ${FASTAPI_PORT}'
+      container_name: niv
+      ports:
+        - "${FASTAPI_PORT}:${FASTAPI_PORT}"
+      environment:
+        - DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}}"
+      depends_on:
+        - db
 
-volumes:
-  local_pgdata:
-  pgadmin-data:
+  volumes:
+    local_pgdata:
+    pgadmin-data:
