@@ -1,14 +1,16 @@
 import logging
+from pydantic import conint
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
-from pydantic import conint
 
 from app.database.database import get_db
-from app.schemas.file import FileCreate, FileResponse, FileTopSharedResponse
 from app.database.operations.files import (create_file_db, get_files_db,
                                            get_file_by_id_db, share_file_with_user_db,
                                            share_file_with_group_db, get_top_shared_file_db)
+from app.schemas.file import FileCreate, FileResponse, FileTopSharedResponse
+
 
 logger = logging.getLogger(__name__)
 

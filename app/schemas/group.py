@@ -1,5 +1,6 @@
-from typing import List
 from pydantic import BaseModel
+from typing import List
+
 from app.schemas.user import UserResponse
 
 

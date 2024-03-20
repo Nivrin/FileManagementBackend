@@ -1,8 +1,8 @@
+from pydantic import BaseModel,conint, Field
 from typing import List, Optional
-from pydantic import BaseModel, Field, conint
 
-from app.schemas.user import UserResponse
 from app.schemas.group import GroupResponse
+from app.schemas.user import UserResponse
 
 
 class FileCreate(BaseModel):

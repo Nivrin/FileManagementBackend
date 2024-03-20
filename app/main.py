@@ -1,6 +1,7 @@
 import logging
-import uvicorn
 import os
+import uvicorn
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 
@@ -14,7 +15,9 @@ setup_logging()
 
 logging.info('Application started')
 
-LOG_FILE_PATH = "./logs/app.log"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+log_file = os.path.join(current_dir, '..', 'logs', 'app.log')
 
 create_database()
 
@@ -31,12 +34,11 @@ async def health_check():
 
 @app.get("/logs")
 async def get_logs():
-    if not os.path.exists(LOG_FILE_PATH):
+    if not os.path.exists(log_file):
         raise HTTPException(status_code=404, detail="Log file not found")
 
-    return FileResponse(LOG_FILE_PATH)
+    return FileResponse(log_file)
 
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8001, reload=True)
-    

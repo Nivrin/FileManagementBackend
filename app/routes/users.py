@@ -1,13 +1,16 @@
 import logging
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import conint
 from sqlalchemy.orm import Session
-from typing import List
+
 
 from app.database.database import get_db
-from app.schemas.user import UserCreate, UserResponse
 from app.database.operations.users import (create_user_db,
                                            get_all_users_db, get_user_by_id_db)
+from app.schemas.user import UserCreate, UserResponse
+
 
 logger = logging.getLogger(__name__)
 
