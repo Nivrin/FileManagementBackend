@@ -73,7 +73,7 @@ async def get_all_users(db: Session = Depends(get_db)):
             detail="An error occurred while retrieving users")
 
 
-@router.get("/GetUserByID/", response_model=UserResponse, description="Get user by ID")
+@router.get("/GetUserByID/{user_id}", response_model=UserResponse, description="Get user by ID")
 async def get_user_by_id(user_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Retrieve a user by its ID.

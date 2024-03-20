@@ -74,7 +74,7 @@ async def get_files(db: Session = Depends(get_db)):
         )
 
 
-@router.get("/GetFileByID/", response_model=FileResponse, description="Get file by ID.")
+@router.get("/GetFileByID/{file_id}", response_model=FileResponse, description="Get file by ID.")
 async def get_file_by_id(file_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Retrieve a file by its ID.
@@ -172,7 +172,7 @@ async def share_file_with_group(file_id: conint(ge=1), group_id: conint(ge=1), d
         )
 
 
-@router.get("/TopSharedFiles/", response_model=List[FileTopSharedResponse], description="Get top shared files.")
+@router.get("/TopSharedFiles/{k}", response_model=List[FileTopSharedResponse], description="Get top shared files.")
 async def get_top_shared_files(k:  conint(ge=1, le=10) = 5, db: Session = Depends(get_db)):
     """
     Retrieve the top shared files.

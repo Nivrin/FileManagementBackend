@@ -65,7 +65,7 @@ async def get_all_groups(db: Session = Depends(get_db)):
             detail="An error occurred while retrieving groups")
 
 
-@router.get("/GetGroupByID/", response_model=GroupResponse, description="Get group by ID")
+@router.get("/GetGroupByID/{group_id}", response_model=GroupResponse, description="Get group by ID")
 async def get_group_by_id(group_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Retrieve a user group by its ID.
