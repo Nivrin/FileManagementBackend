@@ -91,10 +91,6 @@ async def get_user_by_id(user_id: conint(ge=1), db: Session = Depends(get_db)):
     try:
         user_retrieved: UserResponse = await get_user_by_id_db(user_id, db)
 
-        # if user_retrieved is None:
-        #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-        #                         detail="User not found")
-
         logger.info(f"User: '{user_retrieved.name}' - retrieved.")
         return user_retrieved
 

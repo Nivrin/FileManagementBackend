@@ -163,14 +163,13 @@ This document outlines the usage of the API endpoints provided by the applicatio
   - 404 Not Found: If the group with the specified ID is not found.
   - 500 Internal Server Error: An error occurred during the retrieval process.
 
-### Share User With Group
+### Share Group With User
 
 - **Description:** Share a user with a group.
-- **Endpoint:** POST /groups/ShareUserWithGroup/{file_id}
-- **Path Parameters:**
-  - **file_id (int):** The ID of the file to share.
+- **Endpoint:** POST /groups/ShareGroupWithUser/
 - **Query Parameters:**
-  - **user_id (int):** The ID of the user to share the file with.
+  - **group_id (int):** The ID of the group to share with the user.
+  - **user_id (int):** The ID of the user to share with the group.
 - **Response:**
   - **GroupResponse:** The details of the group after sharing.
 - **Errors:**
@@ -214,9 +213,7 @@ This document outlines the usage of the API endpoints provided by the applicatio
 ## Share File With User
 
 - **Description:** Share a file with a user.
-- **Endpoint:** POST /files/ShareFileWithUser/{file_id}
-- **Path Parameters:**
-  - **file_id (int):** The ID of the file to share.
+- **Endpoint:** POST /files/ShareFileWithUser/
 - **Query Parameters:**
   - **user_id (int):** The ID of the user to share the file with.
 - **Response:**
@@ -229,9 +226,7 @@ This document outlines the usage of the API endpoints provided by the applicatio
 ## Share File With Group
 
 - **Description:** Share a file with a group.
-- **Endpoint:** POST /files/ShareFileWithGroup/{file_id}
-- **Path Parameters:**
-  - **file_id (int):** The ID of the file to share.
+- **Endpoint:** POST /files/ShareFileWithGroup/
 - **Query Parameters:**
   - **group_id (int):** The ID of the group to share the file with.
 - **Response:**

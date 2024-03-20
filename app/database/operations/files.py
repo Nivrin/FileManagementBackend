@@ -8,7 +8,7 @@ from app.models.user import User
 from app.models.group import Group
 from app.schemas.file import (FileCreate,
                               FileTopSharedResponse)
-
+from app.schemas.user import (UserShared)
 
 async def create_file_db(file: FileCreate, db: Session):
     try:
@@ -152,7 +152,7 @@ async def get_top_shared_file_db(k: int, db) -> List[FileTopSharedResponse]:
         files = []
         for row in result:
             file_name, risk, merged_users, merged_users_count = row
-            users: list[str] = merged_users.split(',') if merged_users else []
+            users: list[UserShared] = merged_users.split(',') if merged_users else []
             file_data = {
                 "name": file_name,
                 "risk": risk,

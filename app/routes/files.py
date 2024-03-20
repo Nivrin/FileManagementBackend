@@ -106,7 +106,7 @@ async def get_file_by_id(file_id: conint(ge=1), db: Session = Depends(get_db)):
         )
 
 
-@router.post("/ShareFileWithUser/{file_id}", response_model=FileResponse, description="Share file with a user.")
+@router.post("/ShareFileWithUser/", response_model=FileResponse, description="Share file with a user.")
 async def share_file_with_user(file_id: conint(ge=1), user_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Share a file with a group.
@@ -139,7 +139,7 @@ async def share_file_with_user(file_id: conint(ge=1), user_id: conint(ge=1), db:
         )
 
 
-@router.post("/ShareFileWithGroup/{file_id}", response_model=FileResponse, description="Share file with a user.")
+@router.post("/ShareFileWithGroup/", response_model=FileResponse, description="Share file with a group.")
 async def share_file_with_group(file_id: conint(ge=1), group_id: conint(ge=1), db: Session = Depends(get_db)):
     """
     Share a file with a group.
@@ -188,10 +188,10 @@ async def get_top_shared_files(k:  conint(ge=1, le=10) = 5, db: Session = Depend
         HTTPException: If an error occurs during the retrieval process.
     """
     try:
-        files: List[FileTopSharedResponse] = await get_top_shared_file_db(k, db)
+        files_retrieved: List[FileTopSharedResponse] = await get_top_shared_file_db(k, db)
 
         logger.info(f"Top {k} shared files retrieved.")
-        return files
+        return files_retrieved
 
     except Exception as e:
         logger.error(f"Error occurred while retrieving {k} top shared files - {e}")

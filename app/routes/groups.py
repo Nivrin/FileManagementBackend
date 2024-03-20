@@ -83,10 +83,6 @@ async def get_group_by_id(group_id: conint(ge=1), db: Session = Depends(get_db))
     try:
         group_retrieved: GroupResponse = await get_group_by_id_db(group_id, db)
 
-        # if group_retrieved is None:
-        #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-        #                         detail="Group not found")
-
         logger.info(f"Group: '{group_retrieved.name}' - retrieved.")
         return group_retrieved
 
@@ -100,10 +96,10 @@ async def get_group_by_id(group_id: conint(ge=1), db: Session = Depends(get_db))
             detail="An error occurred while retrieving a group")
 
 
-@router.post("/ShareUserWithGroup/{file_id}", response_model=GroupResponse, description="Share file with a user.")
+@router.post("/ShareGroupWithUser/", response_model=GroupResponse, description="Share file with a user.")
 async def share_group_with_user(group_id: conint(ge=1), user_id: conint(ge=1), db: Session = Depends(get_db)):
     """
-    Share a user with a group.
+    Share a group with a user.
 
     Args:
         user_id (int): The ID of the user to share.

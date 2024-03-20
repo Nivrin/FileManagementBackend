@@ -1,4 +1,3 @@
-from pydantic import conint
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
