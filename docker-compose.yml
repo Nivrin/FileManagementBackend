@@ -6,7 +6,7 @@
       container_name: local_pgdb
       restart: always
       ports:
-        - "5432:5432"
+        - "${POSTGRES_PORT}:${POSTGRES_PORT}"
       environment:
         POSTGRES_DB: ${POSTGRES_DB}
         POSTGRES_USER: ${POSTGRES_USER}
@@ -27,10 +27,10 @@
       volumes:
         - pgadmin-data:/var/lib/pgadmin
 
-    web:
+    backend:
       build: .
-      command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0 --port ${FASTAPI_PORT}'
-      container_name: niv
+      command: 'uvicorn app.main:app --host 0.0.0.0 --port ${FASTAPI_PORT}'
+      container_name: backend
       ports:
         - "${FASTAPI_PORT}:${FASTAPI_PORT}"
       environment:

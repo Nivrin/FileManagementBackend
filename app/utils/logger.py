@@ -8,9 +8,9 @@ def setup_logging():
 
     logs_dir = os.path.join(current_dir, '..', '..', 'logs')
 
-    os.makedirs(logs_dir, exist_ok=True)
-
     log_file = os.path.join(logs_dir, 'app.log')
+
+    os.makedirs(logs_dir, exist_ok=True)
 
     logging.basicConfig(
         level=logging.INFO,
