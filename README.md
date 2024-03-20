@@ -10,47 +10,47 @@ This is a FastAPI application designed to demonstrate CRUD operations for managi
 ## Project Structure
 
 This project has the following structure:
-
-- **app/**: Main application directory.
-  - **config/**: Directory for configuration files.
-    - **config.py**: Application configuration file.
-  - **database/**: Directory for database related files.
-    - **database.py**: Database configuration and connection.
-    - **operations/**: Directory for database operation files.
-      - **files.py**: File-related database operations.
-      - **groups.py**: Group-related database operations.
-      - **users.py**: User-related database operations.
-  - **models/**: Directory for database model files.
-    - **file.py**: File model definition.
-    - **group.py**: Group model definition.
-    - **user.py**: User model definition.
-  - **routes/**: Directory for API routes.
-    - **files.py**: Routes related to files.
-    - **groups.py**: Routes related to groups.
-    - **users.py**: Routes related to users.
-  - **schemas/**: Directory for API request/response schemas.
-    - **file.py**: File schema definition.
-    - **file_user.py**: File-User relationship model definition.
-    - **file_group.py**: File-Group relationship model definition.
-    - **group.py**: Group schema definition.
-    - **user.py**: User schema definition.
-    - **user_group.py**: User-Group relationship model definition.
-  - **main.py**: Main application entry point.
-  - **utils/**: Directory for utility files.
-    - **logger.py**: Logging utility.
-
-- **.env**: Environment configuration file.
-
-- **.gitignore**: Git ignore file specifying files and directories to be ignored by version control.
-
-- **.dockerignore**: Docker ignore file specifying files and directories to be ignored by Docker when building images.
-
-- **requirements.txt**: File containing project dependencies.
-
-- **Dockerfile**: File for building Docker image for the application.
-
-- **docker-compose.yml**: Docker Compose configuration file for defining services, networks, and volumes.
-
+  ```bash
+  - **app/**: Main application directory.
+    - **config/**: Directory for configuration files.
+      - **config.py**: Application configuration file.
+    - **database/**: Directory for database related files.
+      - **database.py**: Database configuration and connection.
+      - **operations/**: Directory for database operation files.
+        - **files.py**: File-related database operations.
+        - **groups.py**: Group-related database operations.
+        - **users.py**: User-related database operations.
+    - **models/**: Directory for database model files.
+      - **file.py**: File model definition.
+      - **group.py**: Group model definition.
+      - **user.py**: User model definition.
+    - **routes/**: Directory for API routes.
+      - **files.py**: Routes related to files.
+      - **groups.py**: Routes related to groups.
+      - **users.py**: Routes related to users.
+    - **schemas/**: Directory for API request/response schemas.
+      - **file.py**: File schema definition.
+      - **file_user.py**: File-User relationship model definition.
+      - **file_group.py**: File-Group relationship model definition.
+      - **group.py**: Group schema definition.
+      - **user.py**: User schema definition.
+      - **user_group.py**: User-Group relationship model definition.
+    - **main.py**: Main application entry point.
+    - **utils/**: Directory for utility files.
+      - **logger.py**: Logging utility.
+  
+  - **.env**: Environment configuration file.
+  
+  - **.gitignore**: Git ignore file specifying files and directories to be ignored by version control.
+  
+  - **.dockerignore**: Docker ignore file specifying files and directories to be ignored by Docker when building images.
+  
+  - **requirements.txt**: File containing project dependencies.
+  
+  - **Dockerfile**: File for building Docker image for the application.
+  
+  - **docker-compose.yml**: Docker Compose configuration file for defining services, networks, and volumes.
+  ```
 
 ## Features
 
@@ -76,7 +76,7 @@ This project has the following structure:
 3. **Run the docker compose**
 
    ```bash
-    docker compose up
+    docker compose up --build
    ```
 
 ## Access the Application
